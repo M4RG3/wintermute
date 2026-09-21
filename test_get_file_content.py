@@ -1,4 +1,6 @@
+from config import MAX_CHARS
 from functions.get_file_content import get_file_content
+
 
 
 result = get_file_content("calculator", "lorem.txt")
@@ -16,3 +18,6 @@ print(get_file_content("calculator", "/bin/cat"))
 
 print("Result for 'pkg/does_not_exist.py' directory:")
 print(get_file_content("calculator", "pkg/does_not_exist.py"))
+
+print(f"MAX_CHARS: {MAX_CHARS}")
+print(f"Result length: {len(result)}")

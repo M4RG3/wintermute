@@ -1,15 +1,13 @@
 import os
+from functions.get_safe_path import get_safe_path
 
 
 def write_file(working_directory: str, file_path: str, content: str) -> str:
-   
-    working_dir_abs = os.path.abspath(working_directory)
-    
-    file_path_abs = os.path.normpath(os.path.join(working_dir_abs, file_path))
-
     try:    
-        valid_target_dir: bool = os.path.commonpath([working_dir_abs, file_path_abs]) == working_dir_abs
-        if not valid_target_dir:
+        
+        file_path_abs = get_safe_path(working_directory, file_path)
+
+        if file_path_abs is None:
             return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
 
         valid_directory: bool = os.path.isdir(file_path_abs)
