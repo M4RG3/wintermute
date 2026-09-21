@@ -1,16 +1,17 @@
 import os
 import subprocess
+from functions.get_safe_path import get_safe_path
+
 
 def run_python_file(
     working_directory: str, file_path: str, args: list[str] | None = None
 ) -> str:
 
     try:
-        working_dir_abs = os.path.abspath(working_directory)       
-        abs_file_path = os.path.normpath(os.path.join(working_dir_abs, file_path))
+        working_dir_abs = os.path.abspath(working_directory)
+        abs_file_path = get_safe_path(working_directory, file_path)
 
-        valid_file_path: bool = os.path.commonpath([working_dir_abs, abs_file_path]) == working_dir_abs
-        if not valid_file_path:
+        if abs_file_path is None:
             return f'Error: Cannot execute "{file_path}" as it is outside the permitted working directory'
 
 
@@ -34,13 +35,13 @@ def run_python_file(
 
         return_str: str = ""
 
-        if not process_result.returncode == 0:
+        if process_result.returncode != 0:
             return_str += f"Process exited with code {process_result.returncode}\n"
 
-        if not process_result.stdout == "":
+        if process_result.stdout != "":
             return_str += f"STDOUT: {process_result.stdout}"
 
-        if not process_result.stderr ==  "":
+        if process_result.stderr !=  "":
             return_str += f"STDERR: {process_result.stderr}"
 
         if process_result.stderr ==  "" and process_result.stdout == "":
