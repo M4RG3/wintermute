@@ -29,7 +29,14 @@ def main():
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
-    generate_content(client, messages, args.verbose, args.user_prompt)
+    for i in range(20):
+        result = generate_content(client, messages, args.verbose, args.user_prompt)
+        if result is not None:
+            break
+    else:
+        print(f"Unable to find a result in 20 transactions")
+    
+
 
 
 def generate_content(client: OpenAI, messages: list, is_verbose: bool, user_prompt: str) -> None:
@@ -51,6 +58,7 @@ def generate_content(client: OpenAI, messages: list, is_verbose: bool, user_prom
     print("Response:")
     
     message = response.choices[0].message
+    messages.append(message)
     if message.tool_calls != None:
         for tool_call in message.tool_calls:
             result_message = call_function(tool_call, is_verbose)
@@ -58,7 +66,10 @@ def generate_content(client: OpenAI, messages: list, is_verbose: bool, user_prom
                 raise Exception(f"Error: Function {tool_call.function.name} returned no content.")
             if is_verbose:
                 print(f"-> {result_message['content']}")
+            messages.append(result_message)
     else:
         print(message.content)
+        return message.content
+    
 if __name__ == "__main__":
     main()
